@@ -1,0 +1,1 @@
+A shmup template built in Phaser. I'm currently planning to expand upon this, then eventually turning it into something with more commercial intentions.
