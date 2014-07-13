@@ -14,12 +14,14 @@ var bulletTime = 0;
 var enemyPool;
 var nextEnemyAt;
 var enemyDelay;
+var emitter;
 
 function preload() {
     game.load.image('imgPlayer', 'assets/player.png');
     game.load.image('bullets', 'assets/bullet.png');
     game.load.image('bgTile', 'assets/Backgrounds/darkPurple.png');
     game.load.image('enemy', 'assets/enemies/enemyBlack2.png');
+    game.load.image('explosion_particle', 'assets/enemies/explosion_particle.png');
 }
 
 function create() {
@@ -37,6 +39,7 @@ function create() {
     createEnemies();
     
 }
+
 
 function update(){
     bgTile.tilePosition.y += speed;
@@ -82,6 +85,14 @@ function createEnemies(){
     
     nextEnemyAt = 0;
     enemyDelay = 1000;
+    
+    //add particle effects for when enemies are destroyed
+    emitter = game.add.emitter(0, 0, 100);
+    emitter.makeParticles('explosion_particle');
+    emitter.gravity = 0;
+    emitter.setAlpha(0.3, 0.8);
+    emitter.setScale(0.5, 1);
+    
 }
 
 function updatePlayer(){
@@ -172,7 +183,14 @@ function fireBullet () {
 }
 
 function enemyHit(bullet, enemy){
+    
+    // 'splosion!
+    emitter.x = enemy.x;
+    emitter.y = enemy.y;
+    emitter.start(true, 1000, null, 15);
+    
     bullet.kill();
     enemy.kill();
+
 }
 
