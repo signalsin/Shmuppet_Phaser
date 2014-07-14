@@ -16,6 +16,8 @@ var nextEnemyAt;
 var enemyDelay;
 var emitter;
 
+var score;
+
 function preload() {
     game.load.image('imgPlayer', 'assets/player.png');
     game.load.image('bullets', 'assets/bullet.png');
@@ -37,7 +39,7 @@ function create() {
     
     createPlayer();
     createEnemies();
-    
+    createScoreText();
 }
 
 
@@ -45,7 +47,6 @@ function update(){
     bgTile.tilePosition.y += speed;
     
     game.physics.arcade.overlap(bullets, enemyPool, enemyHit, null, this );
-
     
     updatePlayer();
     updateEnemies();
@@ -82,6 +83,7 @@ function createEnemies(){
     enemyPool.setAll('anchor.y', 0.5);
     enemyPool.setAll('outOfBoundsKill', true);
     enemyPool.setAll('checkWorldBounds', true);
+    enemyPool.setAll('reward', 10, false, false, 0, true);
     
     nextEnemyAt = 0;
     enemyDelay = 1000;
@@ -92,6 +94,13 @@ function createEnemies(){
     emitter.gravity = 0;
     emitter.setAlpha(0.3, 0.8);
     emitter.setScale(0.5, 1);
+    
+}
+
+function createScoreText(){
+    score = 0;
+    scoreText = game.add.text(50, 15, '' + score, { font: '20px monospace', fill: 'red', align: 'center' });
+    scoreText.anchor.setTo(0.5, 0.5);
     
 }
 
@@ -189,8 +198,15 @@ function enemyHit(bullet, enemy){
     emitter.y = enemy.y;
     emitter.start(true, 1000, null, 15);
     
+    // add to score
+    addToScore(enemy.reward);
+    
     bullet.kill();
     enemy.kill();
 
 }
 
+function addToScore(reward){
+    score += reward;
+    scoreText.text = score;
+}
