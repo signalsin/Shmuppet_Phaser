@@ -1,7 +1,7 @@
-var game = new Phaser.Game(320, 480, Phaser.AUTO, '');
+var game = new Phaser.Game(320, 480, Phaser.CANVAS, '');
 
 var player = new Player(game);
-var enemyPool = new Enemies(game);
+var enemies = new Enemies(game);
 var cursors;
 var inputType;
 
@@ -11,12 +11,14 @@ var main_state = {
         this.load.image('imgPlayer', 'assets/player.png');
         this.load.image('bullets', 'assets/bullet.png');
         this.load.image('bgTile', 'assets/Backgrounds/darkPurple.png');
-        this.load.image('enemy', 'assets/enemies/enemyBlack2.png');
+        this.load.image('enemyBasic', 'assets/enemies/enemyBasic.png');
+        this.load.image('enemyBasicShooter', 'assets/enemies/enemyBasicShooter.png');
+        this.load.image('enemyBullet', 'assets/enemies/laser.png');
         this.load.image('explosion_particle', 'assets/enemies/explosion_particle.png');
     },
 
     create: function () {
-
+        
         //enable the Arcade Physics system
         this.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -30,7 +32,7 @@ var main_state = {
         this.inputType = 'mouse'
         
         player.create();
-        enemyPool.create();
+        enemies.create();
         
         this.createScoreText();
     },
@@ -38,9 +40,12 @@ var main_state = {
     update: function (){
         this.bgTile.tilePosition.y += 1;
         
-        enemyPool.update();
-        player.update(this.cursors, this.inputType, enemyPool.getEnemyPool());
+        enemies.update();
         
+        player.checkCollisions(enemies.getEnemyPool('basic'));
+        player.checkCollisions(enemies.getEnemyPool('shooter'));
+        
+        player.update(this.cursors, this.inputType);
     },
 
     createScoreText: function (){
@@ -51,13 +56,17 @@ var main_state = {
     },
     
     enemyHit: function (bullet, enemy){
-        enemyPool.enemyHit(bullet, enemy);
+        enemies.enemyHit(bullet, enemy);
 
     },
         
     addToScore: function (reward){
         this.score += reward;
         this.scoreText.text = this.score;
+    },
+    
+    getPlayer: function(){
+        return player.getPlayer();
     },
 
 };

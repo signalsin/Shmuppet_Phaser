@@ -17,10 +17,9 @@ Player.prototype.create = function () {
     this.createBullets();
 }
 
-Player.prototype.update = function(cursors, inputType, enemies) {
-    this.checkCollisions(enemies);
+Player.prototype.update = function(cursors, inputType) {
     this.playerMovement(cursors, inputType);
-    this.fireBullet();   
+    this.fireBullet();
 }
 
 Player.prototype.checkCollisions = function(enemies) {
@@ -124,4 +123,8 @@ Player.prototype.fireBullet = function() {
             this.bulletTime = this.game.time.now + 700;
         }
     }
+}
+
+Player.prototype.getPlayer = function() {
+    return this.player;
 }
