@@ -2,19 +2,21 @@ var game = new Phaser.Game(320, 480, Phaser.CANVAS, '');
 
 var player = new Player(game);
 var enemies = new Enemies(game);
-var cursors;
 var inputType;
 
 var main_state = {
 
     preload: function () {
-        this.load.image('imgPlayer', 'assets/player.png');
-        this.load.image('bullets', 'assets/bullet.png');
-        this.load.image('bgTile', 'assets/Backgrounds/darkPurple.png');
-        this.load.image('enemyBasic', 'assets/enemies/enemyBasic.png');
-        this.load.image('enemyBasicShooter', 'assets/enemies/enemyBasicShooter.png');
-        this.load.image('enemyBullet', 'assets/enemies/laser.png');
-        this.load.image('explosion_particle', 'assets/enemies/explosion_particle.png');
+        //this.load.image('imgPlayer', 'assets/player.png');
+        this.load.spritesheet('imgPlayer', 'assets/playerGhost.png', 38, 29);
+        this.load.image('playerLife', 'assets/playerLife.png');
+        //this.load.spritesheet('playeGhost', 'assets/playerGhost.png', 38, 29);
+        this.load.image('bullets', 'assets/playerBullet.png');
+        this.load.image('bgTile', 'assets/bgDarkPurple.png');
+        this.load.image('enemyBasic', 'assets/enemyBasic.png');
+        this.load.image('enemyBasicShooter', 'assets/enemyBasicShooter.png');
+        this.load.image('enemyBullet', 'assets/laser.png');
+        this.load.image('explosion_particle', 'assets/explosion_particle.png');  
     },
 
     create: function () {
@@ -25,13 +27,16 @@ var main_state = {
         //create the background
         this.bgTile = this.add.tileSprite(0, 0, this.stage.bounds.width, this.stage.bounds.height, 'bgTile');
         
-        this.cursors = this.game.input.keyboard.createCursorKeys();
+        //select input type
+        //this.inputType = 'keyboard';
+        this.inputType = 'touch';
         
-        //determine if input is keyboard or mouse
-        //this.inputType = 'keyboard'
-        this.inputType = 'mouse'
+        //automatically choose touch if touchscreen is present
+        if (this.game.device.touch == true) {
+         this.inputType = 'touch';
+        }
         
-        player.create();
+        player.create(this.inputType);
         enemies.create();
         
         this.createScoreText();
@@ -39,24 +44,31 @@ var main_state = {
 
     update: function (){
         this.bgTile.tilePosition.y += 1;
-        
+        player.update(this.inputType);
         enemies.update();
+
+        if (player.getAlive()){
+            this.checkCollisions();
+        }
+    },
+    
+    checkCollisions: function(){
+        //player bullets and enemies
+        this.physics.arcade.overlap(player.getBullets(), enemies.getEnemyPool('basic'), enemies.enemyHit, null, this);
+        this.physics.arcade.overlap(player.getBullets(), enemies.getEnemyPool('shooter'), enemies.enemyHit, null, this);
         
-        player.checkCollisions(enemies.getEnemyPool('basic'));
-        player.checkCollisions(enemies.getEnemyPool('shooter'));
+        //player and enemies
+        this.physics.arcade.overlap(player.getPlayer(), enemies.getEnemyPool('basic'), player.playerHit, null, this);
+        this.physics.arcade.overlap(player.getPlayer(), enemies.getEnemyPool('shooter'), player.playerHit, null, this);
         
-        player.update(this.cursors, this.inputType);
+        //player and bullets
+        this.physics.arcade.overlap(player.getPlayer(), enemies.getEnemyBullets('shooter'), player.playerHit, null, this);
     },
 
     createScoreText: function (){
         this.score = 0;
-        this.scoreText = this.add.text(50, 15, '' + this.score, { font: '20px monospace', fill: 'red', align: 'center' });
+        this.scoreText = this.add.text(50, 15, '' + this.score, { font: '20px monospace', fill: 'white', align: 'center' });
         this.scoreText.anchor.setTo(0.5, 0.5);
-
-    },
-    
-    enemyHit: function (bullet, enemy){
-        enemies.enemyHit(bullet, enemy);
 
     },
         

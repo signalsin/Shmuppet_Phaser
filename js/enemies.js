@@ -16,7 +16,6 @@ Enemies.prototype.create = function() {
     this.createBasicEnemy();
     this.createBasicShooterEnemy();
     this.createEmitter();
-    
 }
 
 Enemies.prototype.update = function() {
@@ -58,7 +57,7 @@ Enemies.prototype.createBasicShooterEnemy = function() {
 
 Enemies.prototype.createEmitter = function() {
     //add particle effects for when enemies are destroyed
-    emitter = this.game.add.emitter(0, 0, 100);
+    emitter = this.game.add.emitter(0, 0, 200);
     emitter.makeParticles('explosion_particle');
     emitter.gravity = 0;
     emitter.setAlpha(0.3, 0.8);
@@ -74,9 +73,7 @@ Enemies.prototype.updateBasicEnemy = function() {
         basicEnemy.reset(this.game.rnd.integerInRange(20, 300), 0);
         // also randomize the speed
         basicEnemy.body.velocity.y = this.game.rnd.integerInRange(30, 60);
-        
     }
-    
 }
 
 Enemies.prototype.updateBasicShootingEnemy = function() {
@@ -87,7 +84,6 @@ Enemies.prototype.updateBasicShootingEnemy = function() {
         basicShooterEnemy.body.velocity.y = this.game.rnd.integerInRange(30, 60);
         basicShooterEnemy.nextShotAt = 0;
     }
-    
     this.fireBasicShooterBullet();
 }
 
@@ -102,9 +98,7 @@ Enemies.prototype.fireBasicShooterBullet = function() {
                 bullet.rotation = this.game.physics.arcade.moveToObject(bullet, main_state.getPlayer(), 150);
                 enemy.nextShotAt = this.game.time.now + BasicShooterShotDelay;
             }
-
         }
-
     }, this);
 }
 
@@ -113,7 +107,7 @@ Enemies.prototype.enemyHit = function(bullet, enemy) {
     // 'splosion!
     emitter.x = enemy.x;
     emitter.y = enemy.y;
-    emitter.start(true, 1000, null, 15);
+    emitter.start(true, 600, null, 15);
 
     // add to score
     main_state.addToScore(enemy.reward);
@@ -131,5 +125,8 @@ Enemies.prototype.getEnemyPool = function(type) {
         default:
             return this.basicEnemyPool;
     } 
-   
+}
+
+Enemies.prototype.getEnemyBullets = function() {
+    return this.enemyBulletPool;
 }
