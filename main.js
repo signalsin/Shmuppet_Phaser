@@ -1,4 +1,4 @@
-var game = new Phaser.Game(320, 480, Phaser.CANVAS, '');
+var game = new Phaser.Game(320, 480, Phaser.AUTO, '');
 
 var player = new Player(game);
 var enemies = new Enemies(game);
@@ -7,14 +7,13 @@ var inputType;
 var main_state = {
 
     preload: function () {
-        //this.load.image('imgPlayer', 'assets/player.png');
         this.load.spritesheet('imgPlayer', 'assets/playerGhost.png', 38, 29);
         this.load.image('playerLife', 'assets/playerLife.png');
-        //this.load.spritesheet('playeGhost', 'assets/playerGhost.png', 38, 29);
         this.load.image('bullets', 'assets/playerBullet.png');
         this.load.image('bgTile', 'assets/bgDarkPurple.png');
         this.load.image('enemyBasic', 'assets/enemyBasic.png');
         this.load.image('enemyBasicShooter', 'assets/enemyBasicShooter.png');
+        this.load.image('enemyFastShooter', 'assets/enemyFastShooter.png');
         this.load.image('enemyBullet', 'assets/laser.png');
         this.load.image('explosion_particle', 'assets/explosion_particle.png');  
     },
@@ -56,13 +55,16 @@ var main_state = {
         //player bullets and enemies
         this.physics.arcade.overlap(player.getBullets(), enemies.getEnemyPool('basic'), enemies.enemyHit, null, this);
         this.physics.arcade.overlap(player.getBullets(), enemies.getEnemyPool('shooter'), enemies.enemyHit, null, this);
+        this.physics.arcade.overlap(player.getBullets(), enemies.getEnemyPool('fast'), enemies.enemyHit, null, this);
         
         //player and enemies
         this.physics.arcade.overlap(player.getPlayer(), enemies.getEnemyPool('basic'), player.playerHit, null, this);
         this.physics.arcade.overlap(player.getPlayer(), enemies.getEnemyPool('shooter'), player.playerHit, null, this);
+        this.physics.arcade.overlap(player.getPlayer(), enemies.getEnemyPool('fast'), player.playerHit, null, this);
         
         //player and bullets
         this.physics.arcade.overlap(player.getPlayer(), enemies.getEnemyBullets('shooter'), player.playerHit, null, this);
+        this.physics.arcade.overlap(player.getPlayer(), enemies.getEnemyBullets('fast'), player.playerHit, null, this);
     },
 
     createScoreText: function (){

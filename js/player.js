@@ -18,6 +18,7 @@ Player.prototype.create = function (inputType) {
     this.player.body.collideWorldBounds = true;
     this.player.body.gravity.y = 0.1;
     this.player.anchor.setTo(0.5, 0.5);
+    this.player.body.setSize(20,20);
     
     this.player.animations.add('player', [0]);
     this.player.animations.add('ghostPlayer', [0, 1], 8, true);
